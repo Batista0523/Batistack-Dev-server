@@ -1,0 +1,39 @@
+{
+  "name": "batistack_dev_server",
+  "version": "1.0.0",
+  "description": "Backend for Batistack Development Corp",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "db_schema": "psql -U postgres -f db/schema.sql",
+    "db_seed": "psql -U postgres -f db/seed.sql",
+    "start": "node dist/server.js"
+  },
+  "keywords": [
+    "batistack",
+    "express",
+    "typescript",
+    "postgresql"
+  ],
+  "author": "Elisaul Batista",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.18.2",
+    "nodemailer": "^7.0.2",
+    "pg": "^8.15.6",
+    "pg-promise": "^11.13.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.14",
+    "@types/node": "^18.17.15",
+    "@types/nodemailer": "^6.4.17",
+    "nodemon": "^3.1.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.2"
+  }
+}
