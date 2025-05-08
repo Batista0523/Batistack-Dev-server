@@ -1,4 +1,23 @@
-\c batistack_dev
+\c batistack_dev;
+
+-- Drop tables in the correct order
+-- DROP TABLE IF EXISTS traffic_events CASCADE;
+-- DROP TABLE IF EXISTS daily_stats CASCADE;
+-- DROP TABLE IF EXISTS seo_keywords CASCADE;
+-- DROP TABLE IF EXISTS marketing_campaigns CASCADE;
+-- DROP TABLE IF EXISTS leads CASCADE;
+-- DROP TABLE IF EXISTS admin_user CASCADE;
+
+
+CREATE TABLE admin_user (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password TEXT NOT NULL,           
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
 
 CREATE TABLE traffic_events (
     id SERIAL PRIMARY KEY,

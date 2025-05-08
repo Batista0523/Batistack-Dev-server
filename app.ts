@@ -6,7 +6,7 @@ import DailyStats from "./Controllers/daily_statsControllers";
 import SEOKeywords from "./Controllers/seo_keywordsControllers";
 import Campaigns from "./Controllers/marketing-campaingControllers";
 import Leads from "./Controllers/leadsControllers";
-
+import AdminUser from "./Controllers/admin_userControllers";
 dotenv.config();
 const app = express();
 
@@ -20,6 +20,7 @@ app.use("/daily-stats", DailyStats);
 app.use("/seo-keywords", SEOKeywords);
 app.use("/campaigns", Campaigns);
 app.use("/leads", Leads);
+app.use("/users", AdminUser);
 
 
 app.get("/", (req: Request, res: Response) => {
