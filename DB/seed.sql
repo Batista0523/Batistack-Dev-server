@@ -1,7 +1,7 @@
 \c batistack_dev;
 
 
-INSERT INTO admin_user (username, email, password)
+INSERT INTO admin_user (name, email, password)
 VALUES 
 ('admin', 'admin@batistack.com', '$2b$10$eW5zP8rQH1FQqW.f3DjyUuxMNtih2pm8kL/Bhgydr.ZchI1YW5/0y'); -- Password: "password123"
 
