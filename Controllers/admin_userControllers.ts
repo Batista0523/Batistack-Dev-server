@@ -1,4 +1,4 @@
-// Controllers/admin_userControllers.ts
+
 import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import {
@@ -12,7 +12,7 @@ import {
 
 const AdminUser = express.Router();
 
-// ✅ Registro de Usuario
+
 AdminUser.post("/register", async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
@@ -29,7 +29,7 @@ AdminUser.post("/register", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Login de Usuario
+
 AdminUser.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -42,7 +42,6 @@ AdminUser.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Obtener todos los usuarios
 AdminUser.get("/", async (req: Request, res: Response) => {
   try {
     const allUsers = await getAllAdminUsers();
@@ -53,7 +52,6 @@ AdminUser.get("/", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Obtener un usuario por ID
 AdminUser.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -67,7 +65,6 @@ AdminUser.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Actualizar Contraseña
 AdminUser.put("/update-password", async (req: Request, res: Response) => {
   const { id, newPassword } = req.body;
   try {
@@ -78,7 +75,6 @@ AdminUser.put("/update-password", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Eliminar Usuario
 AdminUser.delete("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
