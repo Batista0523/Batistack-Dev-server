@@ -1,5 +1,5 @@
 
-
+/c batistack_dev
 DROP TABLE IF EXISTS traffic_events CASCADE;
 DROP TABLE IF EXISTS daily_stats CASCADE;
 DROP TABLE IF EXISTS seo_keywords CASCADE;

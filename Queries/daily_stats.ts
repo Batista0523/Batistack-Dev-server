@@ -1,4 +1,4 @@
-// src/queries/dailyStatsQueries.ts
+
 import db from "../DB/db.config";
 
 

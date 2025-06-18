@@ -1,8 +1,8 @@
-// Queries/admin_user.ts
+
 import bcrypt from "bcrypt";
 import db from "../DB/db.config";
 
-// ✅ Admin User Interface
+
 interface AdminUser {
   id?: number;
   name?: string;
@@ -12,7 +12,7 @@ interface AdminUser {
   updated_at?: string;
 }
 
-// ✅ Obtener todos los usuarios
+
 const getAllAdminUsers = async (): Promise<AdminUser[]> => {
   try {
     const allUser = await db.any<AdminUser>("SELECT * FROM admin_user");
@@ -23,7 +23,6 @@ const getAllAdminUsers = async (): Promise<AdminUser[]> => {
   }
 };
 
-// ✅ Obtener un usuario por ID
 const getOneAdminUser = async (id: number): Promise<AdminUser | null> => {
   try {
     const oneUser = await db.oneOrNone<AdminUser>(
@@ -37,7 +36,7 @@ const getOneAdminUser = async (id: number): Promise<AdminUser | null> => {
   }
 };
 
-// ✅ Autenticar Usuario (Sin JWT)
+
 const authenticateAdminUser = async (
   email: string,
   password: string
@@ -61,7 +60,7 @@ const authenticateAdminUser = async (
   return userWithoutPassword;
 };
 
-// ✅ Crear un usuario
+
 const createAdminUser = async (user: AdminUser): Promise<AdminUser> => {
   const existingUser = await db.oneOrNone<AdminUser>(
     "SELECT id FROM admin_user WHERE email = $1",
@@ -84,7 +83,7 @@ const createAdminUser = async (user: AdminUser): Promise<AdminUser> => {
   return createdUser;
 };
 
-// ✅ Actualizar la contraseña del usuario
+
 const updateAdminUserPassword = async (
   id: number,
   newPassword: string
@@ -97,7 +96,7 @@ const updateAdminUserPassword = async (
   return true;
 };
 
-// ✅ Eliminar un usuario
+
 const deleteAdminUser = async (id: number): Promise<AdminUser | null> => {
   return await db.oneOrNone<AdminUser>(
     "DELETE FROM admin_user WHERE id = $1 RETURNING id, name, email, created_at, updated_at",

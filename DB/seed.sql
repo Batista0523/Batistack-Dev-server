@@ -1,4 +1,4 @@
-
+\c batistack_dev
 INSERT INTO admin_user (name, email, password)
 VALUES (
         'admin',

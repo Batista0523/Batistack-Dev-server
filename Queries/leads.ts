@@ -21,7 +21,7 @@ export interface Lead {
   }
 };
 
-
+ 
  const addLead = async (lead: Lead): Promise<void> => {
   try {
     await db.none(
