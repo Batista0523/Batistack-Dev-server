@@ -39,8 +39,8 @@ Batistack more information are:
 information: info@batistack.com
 support: support@batistack.com
 phone: 929-733-1600
+Batistack Development leverages the latest technologies to build modern web solutions. Our frontend stack includes JavaScript, TypeScript, React, HTML, CSS, Bootstrap, and more — while our backend is powered by PostgreSQL, Express, Node.js, TypeScript, and other cutting-edge tools.
 `;
-
 
 export async function getChatResponse(userMessage: string) {
   try {
@@ -51,7 +51,7 @@ export async function getChatResponse(userMessage: string) {
         messages: [
           {
             role: "system",
-            content: `You are a helpful assistant for Batistack Development. Use the following context to answer user questions. At the end, guide users to the relevant industry page if need it or the contact form if appropriate:\n\n${batistackContext}`,
+            content: `You are a helpful assistant for Batistack Development. Use the context below to answer user questions clearly and concisely. When appropriate, guide users to the relevant industry page or the contact form. ${batistackContext}`,
           },
 
           {
