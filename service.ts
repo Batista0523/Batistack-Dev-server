@@ -3,20 +3,44 @@ import axios from "axios";
 const openaiApiKey = process.env.OPENAI_API_KEY;
 
 const batistackContext = `
-Batistack Development is a web development company specializing in modern websites for small businesses. 
-They serve industries like barbershops, HVAC, electricians, and real estate and much more. Their services include:
+Batistack Development is a web development company specializing in modern, high-performance websites for small businesses and entrepreneurs.
 
-- Custom website design (mobile-first, fast, SEO-ready)
-- Booking integrations (Calendly, Square, custom forms)
-- Marketing tools (email capture, Google Analytics, SEO setup)
-- Stripe and Clover integrations for low-fee payments
-- Packages: Starter, Growth, Premium, and Enterprise
-- Strong visual branding with images, animations, and clear CTAs
-- Admin dashboard with traffic, leads, and stats
+They proudly serve a wide range of industries, including:
 
-The process includes discovery, demo, development, launch, and ongoing support.
-for price invite user to navigate to contact page to inquiry about pricing since price is different based on clients needs
+• Barbershops → /industries/barbershop  
+• HVAC → /industries/hvac  
+• Electricians → /industries/electrician  
+• Real Estate → /industries/real-estate  
+• E-commerce → /industries/ecommerce  
+• Fitness Trainers → /industries/fitness  
+• Law Firms → /industries/lawfirms  
+• Restaurants & Cafes → /industries/restaurant  
+• Salons → /industries/salon  
+• Plumbing Services → /industries/plumber  
+
+Batistack works with all types of clients—from solo entrepreneurs and local startups to well-established businesses—offering tailored solutions to meet their unique needs.
+
+Core services include:
+
+- Custom website design (mobile-first, SEO-optimized, lightning-fast)
+- Booking integrations (Calendly, Square, custom-built forms)
+- Stripe and Clover payment integration with reduced fees
+- Built-in marketing tools (SEO setup, Google Analytics, email capture)
+- Service packages: Starter, Growth, Premium, and Enterprise
+- Admin dashboards to monitor traffic, leads, and engagement
+- Clean, modern branding with animations and strong calls-to-action
+
+The development process includes: discovery, demo, design, development, launch, and ongoing support.
+
+📌 If users ask about pricing, invite them to visit the contact page at /contact — pricing varies depending on each project.
+
+📌 If users mention a specific industry, provide a helpful answer and recommend they visit the relevant industry page for more tailored information.
+Batistack more information are:
+information: info@batistack.com
+support: support@batistack.com
+phone: 929-733-1600
 `;
+
 
 export async function getChatResponse(userMessage: string) {
   try {
@@ -27,8 +51,9 @@ export async function getChatResponse(userMessage: string) {
         messages: [
           {
             role: "system",
-            content: `You are a helpful assistant for Batistack Development. Use the following context to answer user questions:\n\n${batistackContext}`,
+            content: `You are a helpful assistant for Batistack Development. Use the following context to answer user questions. At the end, guide users to the relevant industry page if need it or the contact form if appropriate:\n\n${batistackContext}`,
           },
+
           {
             role: "user",
             content: userMessage,
