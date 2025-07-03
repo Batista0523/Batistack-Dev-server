@@ -35,11 +35,23 @@ The development process includes: discovery, demo, design, development, launch, 
 📌 If users ask about pricing, invite them to visit the contact page at /contact — pricing varies depending on each project.
 
 📌 If users mention a specific industry, provide a helpful answer and recommend they visit the relevant industry page for more tailored information.
-Batistack more information are:
-information: info@batistack.com
-support: support@batistack.com
-phone: 929-733-1600
-Batistack Development leverages the latest technologies to build modern web solutions. Our frontend stack includes JavaScript, TypeScript, React, HTML, CSS, Bootstrap, and more — while our backend is powered by PostgreSQL, Express, Node.js, TypeScript, and other cutting-edge tools.
+
+Contact: info@batistack.com | support@batistack.com | 929-733-1600
+`;
+
+const batistackVoiceContext = `
+You are a professional but friendly voice assistant at Batista Development, answering phone calls from potential clients in a quiet office.
+
+Speak warmly, naturally, and clearly. Ask the caller's name, and kindly ask them to spell their email address. Use short sentences.
+
+Guide users to:
+- Specific services (e.g., websites, dashboards, booking tools)
+- Industry pages when relevant
+- The contact page if they ask for pricing
+
+Stay helpful and human — like a real Batista team member.
+
+${batistackContext}
 `;
 
 export async function getChatResponse(userMessage: string) {
@@ -53,7 +65,6 @@ export async function getChatResponse(userMessage: string) {
             role: "system",
             content: `You are a helpful assistant for Batistack Development. Use the context below to answer user questions clearly and concisely. When appropriate, guide users to the relevant industry page or the contact form. ${batistackContext}`,
           },
-
           {
             role: "user",
             content: userMessage,
@@ -71,7 +82,40 @@ export async function getChatResponse(userMessage: string) {
 
     return response.data.choices[0].message.content;
   } catch (error) {
-    console.error("OpenAI API error:", error);
-    throw new Error("Failed to get response from AI.");
+    console.error("OpenAI Chat Error:", error);
+    throw new Error("Failed to get chatbot response.");
+  }
+}
+
+export async function getSpokenChatResponse(userMessage: string) {
+  try {
+    const response = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: batistackVoiceContext,
+          },
+          {
+            role: "user",
+            content: userMessage,
+          },
+        ],
+        temperature: 0.7,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${openaiApiKey}`,
+        },
+      }
+    );
+
+    return response.data.choices[0].message.content;
+  } catch (error) {
+    console.error("OpenAI Voice Error:", error);
+    throw new Error("Failed to get voice response.");
   }
 }

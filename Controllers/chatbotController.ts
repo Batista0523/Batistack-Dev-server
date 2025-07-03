@@ -1,13 +1,12 @@
-
 import express from "express";
 import { getChatResponse } from "../service";
-import { sendChatNotificationEmail } from "../emailService"; // <- make sure it's imported
+import { sendChatNotificationEmail } from "../emailService";
 
 const chatBot = express.Router();
 
 chatBot.post("/", async (req, res) => {
   try {
-    const { message, chatHistory, isFinished } = req.body;
+    const { message, chatHistory, isFinished, userDetails } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "Message is required." });
@@ -20,7 +19,7 @@ chatBot.post("/", async (req, res) => {
         .map((msg: any) => `${msg.role === "user" ? "User" : "AI"}: ${msg.content}`)
         .join("\n\n");
 
-      await sendChatNotificationEmail(fullChat);
+      await sendChatNotificationEmail(fullChat, userDetails);
     }
 
     res.status(200).json({ reply });
