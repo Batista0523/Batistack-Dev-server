@@ -10,7 +10,7 @@
     "seed_local": "psql -U postgres -f db/seed.sql",
     "schema_production": "psql -d postgresql://dbatista:VSaUxCugrpMyw7g9odRyDtSC4RDZcOlr@dpg-clofkurj65ls73f8f9g0-a.ohio-postgres.render.com/batistadb -f db/schema.sql",
     "seed_production": "psql -d postgresql://dbatista:VSaUxCugrpMyw7g9odRyDtSC4RDZcOlr@dpg-clofkurj65ls73f8f9g0-a.ohio-postgres.render.com/batistadb -f db/seed.sql",
-    "start": "node dist/server.js"
+     "start": "node --max-old-space-size=4096 dist/server.js" 
   },
   "keywords": [
     "batistack",
