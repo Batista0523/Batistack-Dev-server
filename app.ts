@@ -8,7 +8,7 @@ import Campaigns from "./Controllers/marketing-campaingControllers";
 import Leads from "./Controllers/leadsControllers";
 import AdminUser from "./Controllers/admin_userControllers";
 import chatBot from "./Controllers/chatbotController";
-import TwilioVoice from "./Controllers/twilioVoiceController";
+import speedBot from "./Controllers/pageSpeedController";
 dotenv.config();
 const app = express();
 
@@ -23,7 +23,7 @@ app.use("/campaigns", Campaigns);
 app.use("/leads", Leads);
 app.use("/users", AdminUser);
 app.use("/chatbot", chatBot);
-app.use("/voice", TwilioVoice);
+app.use("/pagespeed",speedBot);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to the Batistack Development API 🚀");

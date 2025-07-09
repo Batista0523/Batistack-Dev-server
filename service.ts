@@ -39,21 +39,6 @@ The development process includes: discovery, demo, design, development, launch, 
 Contact: info@batistack.com | support@batistack.com | 929-733-1600
 `;
 
-const batistackVoiceContext = `
-You are a professional but friendly voice assistant at Batista Development, answering phone calls from potential clients in a quiet office.
-
-Speak warmly, naturally, and clearly. Ask the caller's name, and kindly ask them to spell their email address. Use short sentences.
-
-Guide users to:
-- Specific services (e.g., websites, dashboards, booking tools)
-- Industry pages when relevant
-- The contact page if they ask for pricing
-
-Stay helpful and human — like a real Batista team member.
-
-${batistackContext}
-`;
-
 export async function getChatResponse(userMessage: string) {
   try {
     const response = await axios.post(
@@ -87,35 +72,69 @@ export async function getChatResponse(userMessage: string) {
   }
 }
 
-export async function getSpokenChatResponse(userMessage: string) {
+const speedApiKey = process.env.PAGESPEED_API_KEY;
+
+export async function analyzeWebsiteAndGetRecommendations(
+  url: string
+): Promise<string> {
   try {
-    const response = await axios.post(
+    const pageSpeedResponse = await axios.get(
+      `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
+        url
+      )}&category=performance&category=accessibility&category=seo&category=best-practices&strategy=desktop&key=${speedApiKey}`
+    );
+
+    const lighthouseResult = pageSpeedResponse.data.lighthouseResult;
+    const categories = lighthouseResult.categories;
+    const audits = lighthouseResult.audits;
+
+    const performanceScore = categories.performance.score * 100;
+    const accessibilityScore = categories.accessibility.score * 100;
+    const seoScore = categories.seo.score * 100;
+    const bestPracticesScore = categories["best-practices"].score * 100;
+
+    const summary = `
+Performance: ${performanceScore}  
+Accessibility: ${accessibilityScore}  
+SEO: ${seoScore}  
+Best Practices: ${bestPracticesScore}  
+
+Key Metrics:
+- First Contentful Paint: ${audits["first-contentful-paint"].displayValue}
+- Speed Index: ${audits["speed-index"].displayValue}
+- Largest Contentful Paint: ${audits["largest-contentful-paint"].displayValue}
+- Time to Interactive: ${audits["interactive"].displayValue}
+- Total Blocking Time: ${audits["total-blocking-time"].displayValue}
+- Cumulative Layout Shift: ${audits["cumulative-layout-shift"].displayValue}
+    `;
+
+    const gptResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
         model: "gpt-4",
         messages: [
           {
             role: "system",
-            content: batistackVoiceContext,
+            content: `You are a website optimization expert. Based on Google PageSpeed data, give professional, actionable recommendations to improve website performance, SEO, accessibility, and user experience.`,
           },
           {
             role: "user",
-            content: userMessage,
+            content: `Here is the PageSpeed data for a user's website:\n${summary}`,
           },
         ],
         temperature: 0.7,
       },
       {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${openaiApiKey}`,
+          "Content-Type": "application/json",
         },
       }
     );
 
-    return response.data.choices[0].message.content;
-  } catch (error) {
-    console.error("OpenAI Voice Error:", error);
-    throw new Error("Failed to get voice response.");
+    return gptResponse.data.choices[0].message.content;
+  } catch (err) {
+    console.error("Speed test error:", err);
+    throw new Error("Failed to analyze website.");
   }
 }

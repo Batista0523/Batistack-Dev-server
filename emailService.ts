@@ -18,9 +18,9 @@ export async function sendChatNotificationEmail(
     subject: "📩 New Batistack AI Chat",
     html: `
       <h3>New Chat with AI:</h3>
-      <p><strong>Full Name:</strong> ${userDetails.fullName}</p>
-      <p><strong>Email:</strong> ${userDetails.email}</p>
-      <p><strong>Phone Number:</strong> ${userDetails.phoneNumber || "Not Provided"}</p>
+      <p><strong>User Full Name:</strong> ${userDetails.fullName}</p>
+      <p><strong>User Email:</strong> ${userDetails.email}</p>
+      <p><strong>User Phone Number:</strong> ${userDetails.phoneNumber || "Not Provided"}</p>
       <h4>Chat History:</h4>
       <pre style="white-space: pre-wrap;">${chatHistory}</pre>
     `,
