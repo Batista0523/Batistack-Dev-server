@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const openaiApiKey = process.env.OPENAI_API_KEY;
+const speedApiKey = process.env.PAGESPEED_API_KEY;
 
 const batistackContext = `
 Batistack Development is a web development company specializing in modern, high-performance websites for small businesses and entrepreneurs.
@@ -33,7 +34,6 @@ Core services include:
 The development process includes: discovery, demo, design, development, launch, and ongoing support.
 
 📌 If users ask about pricing, invite them to visit the contact page at /contact — pricing varies depending on each project.
-
 📌 If users mention a specific industry, provide a helpful answer and recommend they visit the relevant industry page for more tailored information.
 
 Contact: info@batistack.com | support@batistack.com | 929-733-1600
@@ -71,58 +71,102 @@ export async function getChatResponse(userMessage: string) {
     throw new Error("Failed to get chatbot response.");
   }
 }
-
-const speedApiKey = process.env.PAGESPEED_API_KEY;
-
-export async function analyzeWebsiteAndGetRecommendations(
-  url: string
-): Promise<string> {
+export async function analyzeWebsiteAndGetRecommendations(domain: string) {
   try {
-    const pageSpeedResponse = await axios.get(
-      `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
-        url
-      )}&category=performance&category=accessibility&category=seo&category=best-practices&strategy=desktop&key=${speedApiKey}`
-    );
+    const getCategoryScore = async (category: string) => {
+      const response = await axios.get(
+        `https://www.googleapis.com/pagespeedonline/v5/runPagespeed`,
+        {
+          params: {
+            url: domain,
+            category,
+            strategy: "desktop",
+            key: speedApiKey,
+          },
+        }
+      );
+      return {
+        category,
+        data: response.data.lighthouseResult,
+      };
+    };
 
-    const lighthouseResult = pageSpeedResponse.data.lighthouseResult;
-    const categories = lighthouseResult.categories;
-    const audits = lighthouseResult.audits;
+    const [performanceRes, accessibilityRes, seoRes, bestPracticesRes] = await Promise.all([
+      getCategoryScore("performance"),
+      getCategoryScore("accessibility"),
+      getCategoryScore("seo"),
+      getCategoryScore("best-practices"),
+    ]);
 
-    const performanceScore = categories.performance.score * 100;
-    const accessibilityScore = categories.accessibility.score * 100;
-    const seoScore = categories.seo.score * 100;
-    const bestPracticesScore = categories["best-practices"].score * 100;
+    const performanceScore = Math.round((performanceRes.data.categories["performance"]?.score || 0) * 100);
+    const accessibilityScore = Math.round((accessibilityRes.data.categories["accessibility"]?.score || 0) * 100);
+    const seoScore = Math.round((seoRes.data.categories["seo"]?.score || 0) * 100);
+    const bestPracticesScore = Math.round((bestPracticesRes.data.categories["best-practices"]?.score || 0) * 100);
+
+    const audits = performanceRes.data.audits;
 
     const summary = `
-Performance: ${performanceScore}  
-Accessibility: ${accessibilityScore}  
-SEO: ${seoScore}  
-Best Practices: ${bestPracticesScore}  
+Performance: ${performanceScore}
+Accessibility: ${accessibilityScore}
+SEO: ${seoScore}
+Best Practices: ${bestPracticesScore}
 
 Key Metrics:
-- First Contentful Paint: ${audits["first-contentful-paint"].displayValue}
-- Speed Index: ${audits["speed-index"].displayValue}
-- Largest Contentful Paint: ${audits["largest-contentful-paint"].displayValue}
-- Time to Interactive: ${audits["interactive"].displayValue}
-- Total Blocking Time: ${audits["total-blocking-time"].displayValue}
-- Cumulative Layout Shift: ${audits["cumulative-layout-shift"].displayValue}
+- First Contentful Paint: ${audits["first-contentful-paint"]?.displayValue || "N/A"}
+- Speed Index: ${audits["speed-index"]?.displayValue || "N/A"}
+- Largest Contentful Paint: ${audits["largest-contentful-paint"]?.displayValue || "N/A"}
+- Time to Interactive: ${audits["interactive"]?.displayValue || "N/A"}
+- Total Blocking Time: ${audits["total-blocking-time"]?.displayValue || "N/A"}
+- Cumulative Layout Shift: ${audits["cumulative-layout-shift"]?.displayValue || "N/A"}
     `;
+const persuasivePrompt = `
+You are a senior strategist at Batistack Development, a premium web development company.
+
+You’ve just audited a client’s website using Google PageSpeed and now you must deliver a confident, clear, and persuasive diagnosis based on the audit scores.
+
+🔢 Begin by presenting the audit **scores in the following order**:
+1. Performance Score
+2. Accessibility Score
+3. SEO Score
+4. Best Practices Score
+
+📉 For each **low or weak score**, explain the direct negative impact it has on the business. Focus on consequences like:
+- Lost traffic
+- Poor user experience
+- Low conversion rates
+- Bad branding or credibility
+
+🛠️ Then clearly explain how Batistack Development can fix or improve those issues using its services.
+
+🎯 Tone must be:
+- Strategic and confident
+- Respectful and solution-focused
+- Direct and actionable — NOT small talk, NOT casual, NOT like an email
+- Make the client feel they’re already part of the Batistack family
+
+📞 At the end, strongly encourage the business owner to take action by contacting Batistack via:
+- Email: info@batistack.com
+- Phone: 929-733-1600
+
+Keep the structure sharp and the insights valuable. Do not skip any score. Avoid repeating general statements — make your recommendations specific to the results provided.
+
+Use this format every time. Be professional and impactful.
+---
+PageSpeed Data:
+${summary}
+`;
+;
 
     const gptResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
         model: "gpt-4",
         messages: [
-          {
-            role: "system",
-            content: `You are a website optimization expert. Based on Google PageSpeed data, give professional, actionable recommendations to improve website performance, SEO, accessibility, and user experience.`,
-          },
-          {
-            role: "user",
-            content: `Here is the PageSpeed data for a user's website:\n${summary}`,
-          },
+          { role: "system", content: persuasivePrompt },
+          { role: "user", content: "Please analyze and provide improvement suggestions." },
         ],
         temperature: 0.7,
+        max_tokens: 700,
       },
       {
         headers: {
@@ -132,9 +176,19 @@ Key Metrics:
       }
     );
 
-    return gptResponse.data.choices[0].message.content;
-  } catch (err) {
-    console.error("Speed test error:", err);
+    const recommendations = gptResponse.data.choices[0].message.content;
+
+    return {
+      scores: {
+        Performance: performanceScore,
+        Accessibility: accessibilityScore,
+        SEO: seoScore,
+        BestPractices: bestPracticesScore,
+      },
+      recommendations,
+    };
+  } catch (error: any) {
+    console.error("Error in analyzeWebsiteAndGetRecommendations:", error?.response?.data || error.message);
     throw new Error("Failed to analyze website.");
   }
 }
