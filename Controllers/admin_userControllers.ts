@@ -10,6 +10,7 @@ import {
   deleteAdminUser
 } from "../Queries/admin_user";
 
+
 const AdminUser = express.Router();
 
 
