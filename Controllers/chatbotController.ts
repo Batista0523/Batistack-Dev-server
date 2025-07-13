@@ -29,4 +29,30 @@ chatBot.post("/", async (req, res) => {
   }
 });
 
+
+chatBot.post("/batistack-ai", async (req, res) => {
+  try {
+    const userMessage =
+      req.body?.sessionInfo?.parameters?.userMessage || "Tell me about Batistack";
+
+    const reply = await getChatResponse(userMessage);
+
+    res.status(200).json({
+      fulfillment_response: {
+        messages: [
+          {
+            text: {
+              text: [reply],
+            },
+          },
+        ],
+      },
+    });
+  } catch (err) {
+    console.error("Dialogflow Tool Error:", err);
+    res.status(500).json({ error: "Failed to respond to Dialogflow." });
+  }
+});
+
+
 export default chatBot;
