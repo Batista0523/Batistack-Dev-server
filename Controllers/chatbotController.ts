@@ -29,8 +29,14 @@ chatBot.post("/", async (req, res) => {
   }
 });
 
-
 chatBot.post("/batistack-ai", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(" ")[1];
+
+  if (token !== process.env.DIALOGFLOW_SECRET_TOKEN) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
   try {
     const userMessage =
       req.body?.sessionInfo?.parameters?.userMessage || "Tell me about Batistack";
