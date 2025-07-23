@@ -10,12 +10,16 @@ twilioRouter.post("/", async (req, res) => {
 
   try {
     const userInput = req.body.SpeechResult || "Hello there";
+    console.log("📞 User said:", userInput);
 
     const aiReply = await getVoiceResponse(userInput);
+    console.log("🤖 OpenAI replied:", aiReply);
+
     const audioUrl = await getElevenLabsAudio(
       aiReply,
       process.env.ELEVENLABS_VOICE_ID!
     );
+    console.log("🔊 Audio URL:", audioUrl);
 
     twiml.play(audioUrl);
 
@@ -28,7 +32,7 @@ twilioRouter.post("/", async (req, res) => {
 
     res.type("text/xml").send(twiml.toString());
   } catch (err) {
-    console.error("Voice Agent Error:", err);
+    console.error("❌ Voice Agent Error:", err);
     twiml.say("Sorry, I’m having trouble responding. Please try again later.");
     res.type("text/xml").send(twiml.toString());
   }
