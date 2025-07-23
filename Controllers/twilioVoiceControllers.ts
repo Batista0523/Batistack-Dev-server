@@ -9,17 +9,21 @@ twilioRouter.post("/", async (req, res) => {
   const twiml = new twilio.twiml.VoiceResponse();
 
   try {
-    const userInput = req.body.SpeechResult || "Hello there";
-    console.log("📞 User said:", userInput);
+    const userInput = req.body.SpeechResult;
+    const aiPrompt = userInput
+      ? userInput
+      : "Please greet the caller with a friendly welcome from Batistack Development and ask how you can help.";
 
-    const aiReply = await getVoiceResponse(userInput);
+    console.log("📞 User said:", userInput || "(no input)");
+    console.log("🧠 Sending to OpenAI:", aiPrompt);
+
+    const aiReply = await getVoiceResponse(aiPrompt);
     console.log("🤖 OpenAI replied:", aiReply);
 
     const audioUrl = await getElevenLabsAudio(
       aiReply,
       process.env.ELEVENLABS_VOICE_ID!
     );
-    console.log("🔊 Audio URL:", audioUrl);
 
     twiml.play(audioUrl);
 
