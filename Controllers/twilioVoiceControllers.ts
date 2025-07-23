@@ -1,50 +1,37 @@
 import express from "express";
-import VoiceResponse from "twilio/lib/twiml/VoiceResponse";
-import axios from "axios";
+import twilio from "twilio";
+import { getVoiceResponse } from "../service";
+import { getElevenLabsAudio } from "../evenLabs";
 
 const twilioRouter = express.Router();
 
 twilioRouter.post("/", async (req, res) => {
-  const twiml = new VoiceResponse();
- const gather = twiml.gather({
-  input: ["speech"], 
-  action: "/twilio-voice/twilio-voice-response",
-  speechTimeout: "auto",
-});
+  const twiml = new twilio.twiml.VoiceResponse();
 
-  gather.say("Hi! Welcome to Batistack. How can I help you today?");
-  res.type("text/xml");
-  res.send(twiml.toString());
-});
+  try {
+    const userInput = req.body.SpeechResult || "Hello there";
 
+    const aiReply = await getVoiceResponse(userInput);
+    const audioUrl = await getElevenLabsAudio(
+      aiReply,
+      process.env.ELEVENLABS_VOICE_ID!
+    );
 
-twilioRouter.post("/twilio-voice-response", async (req, res) => {
-  const userMessage = req.body.SpeechResult || "No speech received";
+    twiml.play(audioUrl);
 
-  const dialogflowReply = await axios.post(
-    "https://batistack-dev-server.onrender.com/chatbot/batistack-ai",
-    {
-      sessionInfo: {
-        parameters: {
-          userMessage,
-        },
-      },
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.DIALOGFLOW_SECRET_TOKEN}`,
-      },
-    }
-  );
+    twiml.gather({
+      input: ["speech"],
+      action: "/twilio-voice",
+      method: "POST",
+      speechTimeout: "auto",
+    });
 
-  const reply =
-    dialogflowReply.data?.fulfillment_response?.messages?.[0]?.text?.text?.[0] ||
-    "Sorry, I couldn’t understand that.";
-
-  const twiml = new VoiceResponse();
-  twiml.say(reply);
-  res.type("text/xml");
-  res.send(twiml.toString());
+    res.type("text/xml").send(twiml.toString());
+  } catch (err) {
+    console.error("Voice Agent Error:", err);
+    twiml.say("Sorry, I’m having trouble responding. Please try again later.");
+    res.type("text/xml").send(twiml.toString());
+  }
 });
 
 export default twilioRouter;
