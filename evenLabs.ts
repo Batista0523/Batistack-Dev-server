@@ -3,6 +3,15 @@ import fs from "fs";
 import path from "path";
 
 export async function getElevenLabsAudio(text: string, voiceId: string) {
+  const filename = `response_${Date.now()}.mp3`;
+  const audioDir = path.resolve("public/audio");
+  const filePath = path.join(audioDir, filename);
+
+
+  if (!fs.existsSync(audioDir)) {
+    fs.mkdirSync(audioDir, { recursive: true });
+  }
+
   const response = await axios({
     method: "POST",
     url: `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -23,9 +32,8 @@ export async function getElevenLabsAudio(text: string, voiceId: string) {
     responseType: "arraybuffer",
   });
 
-  const filename = `response_${Date.now()}.mp3`;
-  const filepath = path.resolve("public/audio", filename);
-  fs.writeFileSync(filepath, Buffer.from(response.data), "binary");
+  fs.writeFileSync(filePath, Buffer.from(response.data), "binary");
 
+ 
   return `https://batistack-dev-server.onrender.com/audio/${filename}`;
 }
