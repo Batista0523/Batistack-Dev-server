@@ -1,5 +1,6 @@
 import express from "express";
 import { getChatResponse } from "../service";
+import { getVoiceResponse } from "../service";
 import { sendChatNotificationEmail } from "../emailService";
 
 const chatBot = express.Router();
@@ -41,7 +42,7 @@ chatBot.post("/batistack-ai", async (req, res) => {
     const userMessage =
       req.body?.sessionInfo?.parameters?.userMessage || "Tell me about Batistack";
 
-    const reply = await getChatResponse(userMessage);
+    const reply = await getVoiceResponse(userMessage);
 
     res.status(200).json({
       fulfillment_response: {

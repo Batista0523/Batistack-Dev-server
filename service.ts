@@ -79,6 +79,61 @@ ${batistackContext}
   }
 }
 
+export async function getVoiceResponse(userMessage: string) {
+  try {
+    const response = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-4",
+       
+        messages: [
+          {
+            role: "system",
+       content: `
+You are a friendly, persuasive assistant for Batistack Development.
+
+Respond in a short, professional tone — maximum 2 to 3 sentences.
+
+You're chatting with a user who is already on the Batistack website, so do NOT direct them to the contact page right away unless it's absolutely necessary.
+
+Ask follow-up questions to understand their goals and build engagement. Make the conversation feel human and helpful, like a smart assistant who listens before suggesting anything.
+
+Only mention the contact form or email (batistack.com/contact or info@batistack.com) when:
+- The user asks directly about pricing
+- They’re ready to start or request a quote
+- The conversation is clearly near closing
+
+Use the following context to explain our services and how we help businesses grow online:
+
+Context:
+${batistackContext}
+`.trim(),
+
+          },
+          {
+            role: "user",
+            content: userMessage,
+          },
+        ],
+        temperature: 0.6,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${openaiApiKey}`,
+        },
+      }
+    );
+
+    return response.data.choices[0].message.content;
+  } catch (error) {
+    console.error("OpenAI Chat Error:", error);
+    throw new Error("Failed to get chatbot response.");
+  }
+}
+
+
+
 export async function analyzeWebsiteAndGetRecommendations(domain: string) {
   try {
     const getCategoryScore = async (category: string) => {
