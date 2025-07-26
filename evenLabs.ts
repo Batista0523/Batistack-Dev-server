@@ -21,7 +21,7 @@ export async function getElevenLabsAudio(text: string, voiceId: string) {
     },
     data: {
       text,
-      model_id: "eleven_monolingual_v1",
+      model_id: "eleven_turbo_v2",
       voice_settings: {
         stability: 0.4,
         similarity_boost: 0.8,
