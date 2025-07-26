@@ -28,6 +28,7 @@ export async function getElevenLabsAudio(text: string, voiceId: string) {
         style: 0.7,
         use_speaker_boost: true,
       },
+      optimize_streaming_latency: 2
     },
     responseType: "arraybuffer",
   });
